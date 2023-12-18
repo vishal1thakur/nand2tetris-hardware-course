@@ -5,11 +5,25 @@
 /**
  * Computes the sum of two bits.
  */
+
+// Notes:
+// Truth table:
+// a   b   s   c
+// 0   0   0   0
+// 0   1   1   0
+// 1   0   1   0
+// 1   1   0   1
+// The sum is 1 when either a or b is 1, but not both. This is an XOR operation. s = a XOR b.
+// The carry is 1 only when both a and b are 1. This is an AND operation. c = a AND b
+
 CHIP HalfAdder {
     IN a, b;    // 1-bit inputs
     OUT sum,    // Right bit of a + b 
-        carry;  // Left bit of a + b
+        carry;  // Left bit of a + b 
 
     PARTS:
-    //// Replace this comment with your code.
+    Xor(a=a, b=b, out=sum);  // Sum is the XOR of a and b
+    And(a=a, b=b, out=carry); // Carry is the AND of a and b
 }
+
+

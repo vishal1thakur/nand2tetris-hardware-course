@@ -5,11 +5,61 @@
 /**
  * Computes the sum of three bits.
  */
+
+// Notes:
+// Truth table:
+// a b c s c
+// 0 0 0 0 0
+// 0 0 1 1 0
+// 0 1 0 1 0
+// 0 1 1 0 1
+// 1 0 0 1 0
+// 1 0 1 0 1
+// 1 1 0 0 1
+// 1 1 1 1 1
+// sum is 1 when, either a or b or c is 1 OR when all 3 are 1 but not when any 2 are 1
+// so sum = (a XOR b XOR c) OR (a AND b AND c)
+// carry is 1 when, either 2 of abc are 1 or when all 3 are 1 but not when any 1 is 1
+// so carry = ((a and b and notc) OR (a and notb and c) OR (nota and b and c)) OR (a AND b AND c)
+// PS: you dont need to actually add the a AND b AND c separately as 3 way XOR and AND accpunt for it already
 CHIP FullAdder {
     IN a, b, c;  // 1-bit inputs
     OUT sum,     // Right bit of a + b + c
         carry;   // Left bit of a + b + c
 
     PARTS:
-    //// Replace this comment with your code.
+    // 1. when a or b or c is 1
+    Xor(a=a, b=b, out=ABXor);
+    Xor(a=ABXor, b=c, out=ABCXor);
+
+    // 2. when 2 of abc are 1
+    Not(in=a, out=notA);
+    Not(in=b, out=notB);
+    Not(in=c, out=notC);
+
+    And(a=a, b=b, out=AB);
+    And(a=a, b=notC, out=ABnotC);
+    And(a=AB, b=ABnotC, out=ABandNotC); // A AND B AND NOT C
+
+    And(a=a, b=c, out=AC);
+    And(a=a, b=notB, out=ACnotB);
+    And(a=AC, b=ACnotB, out=ACandNotB); // A AND C AND NOT B
+
+    And(a=b, b=c, out=BC);
+    And(a=b, b=notA, out=BCnotA);
+    And(a=BC, b=BCnotA, out=BCandNotA); // B AND C AND NOT A
+
+    Or(a=ABandNotC, b=ACandNotB, out=ABorAC);
+    Or(a=ABorAC, b=BCandNotA, out=any2are1); // Final OR operation
+
+    // 3. when abc are 1
+    And(a=a, b=b, out=ABAnd);
+    And(a=ABAnd, b=c, out=ABCAnd);
+
+    // sum with 1 or 3
+    Or(a=ABCXor, b=ABCAnd, out=sum);
+
+    // carry with 2 or 3
+    Or(a=any2are1, b=ABCAnd, out=carry);
 }
+
