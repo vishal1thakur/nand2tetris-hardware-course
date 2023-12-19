@@ -40,5 +40,51 @@ CHIP ALU {
         ng;      // (out < 0,  1, 0)
 
     PARTS:
-    //// Replace this comment with your code.
+   // 1. zx
+   // Azx (zero the x input)
+   Mux16(a=x, b[0..15]=false, sel=zx, out=xZeroed);
+
+   // 2. nx
+
+   // Negate x if nx is 1 (x or xZeroed from nx)
+   Not16(in=xZeroed, out=notX);
+   Mux16(a=xZeroed, b=notX, sel=nx, out=xProcessed);
+
+   // 3. zy
+
+   // 16-bit zero constant for y
+   
+   // Apply zy (zero the y input)
+   Mux16(a=y, b[0..15]=false, sel=zy, out=yZeroed);
+
+   // 4. ny
+   // Negate y if ny is 1 (x or xZeroed from nx)
+   Not16(in=yZeroed, out=notY);
+   Mux16(a=yZeroed, b=notY, sel=ny, out=yProcessed); 
+
+   // 5. f
+   // x + y
+   Add16(a=xProcessed, b=yProcessed, out=xyAdd);
+   // x & y
+   And16(a=xProcessed, b=yProcessed, out=xyAnd);
+   // select between x + y , x & y on the basis of f
+   Mux16(a=xyAnd, b=xyAdd, sel=f, out=xyF);
+
+   // 6. no
+   // negate xyF
+   Not16(in=xyF, out=notXYF);
+   Mux16(a=xyF, b=notXYF, sel=no, out=negateXYF);
+
+   // 7. zr
+   Or16Way(in=negateXYF,out=orXYF);  //for zr
+   Not(in=orXYF,out=zr);
+
+
+   // 8. ng
+   // Check if MSB is 1
+   And16(a[0..15]=true,b=negateXYF,out[15]=ng,out[0..14]=drop);
+
+   // 9. out
+   Or16(a=negateXYF,b[0..15]=false,out=out);
+   
 }

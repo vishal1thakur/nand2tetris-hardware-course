@@ -12,11 +12,12 @@ Project 1:
 
 - Understand basic logic gates, boolean logic, boolean functions, hardware
   simulation tool, multi-bit buses.
-- Create from scratch 15 fundamental logic gates from NAND as the building block
-  in hdl.
+- 15 fundamental logic gates were created from scratch, using NAND as the
+  building block in hdl.
 
 Project 2:
 
 - Understand binary numbers, addition, half adder, full adder, multi adder,
   add16
-- in first half created hdls for half, full and add16 adders.
+- Using the gates created in project 1, hdls for half adder, full adder, add16,
+  inc16 were created which combined into a ALU.
